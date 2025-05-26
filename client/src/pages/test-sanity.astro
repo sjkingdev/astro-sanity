@@ -1,0 +1,15 @@
+---
+import { testConnection } from '../lib/sanity'
+
+const data = await testConnection()
+---
+
+<html>
+<head>
+  <title>Sanity Test</title>
+</head>
+<body>
+  <h1>Sanity Connection Test</h1>
+  <pre>{JSON.stringify(data, null, 2)}</pre>
+</body>
+</html>

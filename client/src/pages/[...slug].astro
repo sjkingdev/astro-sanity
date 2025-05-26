@@ -1,0 +1,33 @@
+---
+import { getPageBySlug, portableTextToHtml } from '../lib/sanity'
+import Layout from '../layouts/Layout.astro'
+
+import type { Page } from '../lib/types' // or wherever your type is
+
+export async function getStaticPaths() {
+  const pages: Page[] = await import('../lib/sanity').then(m => m.getAllPages())
+  return pages.map(page => ({
+    params: { slug: page.slug?.current.split('/') }
+  }))
+}
+
+
+// const { page } = Astro.props
+const { page }: { page: Page } = Astro.props
+
+
+if (!page) {
+  throw new Error(`Page not found`)
+}
+
+const html = portableTextToHtml(page.content)
+---
+
+<Layout title={page.title}>
+  <article class="prose mx-auto my-10">
+    <h1>{page.title}</h1>
+    <div set:html={html}></div>
+  </article>
+</Layout>
+
+

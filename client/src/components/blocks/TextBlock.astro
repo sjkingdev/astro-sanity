@@ -1,0 +1,49 @@
+---
+import { portableTextToHtml } from '../../lib/sanity'
+
+interface Props {
+  block: {
+    content?: any[]
+    width?: 'narrow' | 'medium' | 'wide' | 'full'
+    alignment?: 'left' | 'center' | 'right'
+    backgroundColor?: any
+    padding?: 'none' | 'small' | 'medium' | 'large'
+  }
+}
+
+const { block } = Astro.props
+const { content, width = 'medium', alignment = 'left', backgroundColor, padding = 'medium' } = block
+
+const contentHtml = content ? portableTextToHtml(content) : ''
+
+const widthClass = {
+  narrow: 'max-w-2xl',
+  medium: 'max-w-4xl',
+  wide: 'max-w-6xl',
+  full: 'max-w-none'
+}[width]
+
+const alignClass = {
+  left: 'text-left',
+  center: 'text-center',
+  right: 'text-right'
+}[alignment]
+
+const paddingClass = {
+  none: 'py-0',
+  small: 'py-8',
+  medium: 'py-16',
+  large: 'py-24'
+}[padding]
+
+const bgStyle = backgroundColor?.hex ? `background-color: ${backgroundColor.hex};` : ''
+const textColor = backgroundColor?.hex ? 'text-white' : 'text-gray-900'
+---
+
+<section class={paddingClass} style={bgStyle}>
+  <div class="container mx-auto px-4">
+    <div class={`prose prose-lg ${widthClass} mx-auto ${alignClass} ${textColor}`}>
+      <div set:html={contentHtml} />
+    </div>
+  </div>
+</section>

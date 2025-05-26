@@ -1,0 +1,87 @@
+---
+import { urlFor } from '../../lib/sanity'
+
+interface Props {
+  block: {
+    title?: string
+    subtitle?: string
+    backgroundImage?: any
+    overlay?: {
+      enabled?: boolean
+      opacity?: number
+      color?: any
+    }
+    buttons?: Array<{
+      text?: string
+      url?: string
+      style?: 'primary' | 'secondary' | 'outline'
+    }>
+    textAlign?: 'left' | 'center' | 'right'
+    height?: 'small' | 'medium' | 'large'
+  }
+}
+
+const { block } = Astro.props
+const { title, subtitle, backgroundImage, overlay, buttons = [], textAlign = 'center', height = 'large' } = block
+
+const backgroundImageUrl = backgroundImage ? urlFor(backgroundImage).width(1920).height(1080).url() : null
+const overlayColor = overlay?.color?.hex || '#000000'
+const overlayOpacity = overlay?.enabled ? (overlay?.opacity || 0.4) : 0
+
+const heightClass = {
+  small: 'min-h-[50vh]',
+  medium: 'min-h-[75vh]',
+  large: 'min-h-screen'
+}[height]
+
+const alignClass = {
+  left: 'text-left',
+  center: 'text-center',
+  right: 'text-right'
+}[textAlign]
+
+const buttonStyles = {
+  primary: 'bg-blue-600 hover:bg-blue-700 text-white',
+  secondary: 'bg-gray-800 hover:bg-gray-900 text-white',
+  outline: 'border-2 border-white text-white hover:bg-white hover:text-gray-900'
+}
+---
+
+<section 
+  class={`hero ${heightClass} flex items-center justify-center relative overflow-hidden`}
+  style={backgroundImageUrl ? `background-image: url(${backgroundImageUrl}); background-size: cover; background-position: center;` : 'background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);'}
+>
+  {overlayOpacity > 0 && (
+    <div 
+      class="absolute inset-0"
+      style={`background-color: ${overlayColor}; opacity: ${overlayOpacity};`}
+    ></div>
+  )}
+  
+  <div class={`container mx-auto px-4 relative z-10 ${alignClass}`}>
+    {title && (
+      <h1 class="text-4xl md:text-6xl lg:text-7xl font-bold mb-6 text-white leading-tight">
+        {title}
+      </h1>
+    )}
+    
+    {subtitle && (
+      <p class="text-xl md:text-2xl mb-8 max-w-3xl mx-auto text-white/90 leading-relaxed">
+        {subtitle}
+      </p>
+    )}
+    
+    {buttons.length > 0 && (
+      <div class="flex flex-col sm:flex-row gap-4 justify-center">
+        {buttons.map((button) => (
+          <a 
+            href={button.url}
+            class={`inline-block font-bold py-4 px-8 rounded-lg text-lg transition-all duration-200 transform hover:scale-105 ${buttonStyles[button.style || 'primary']}`}
+          >
+            {button.text}
+          </a>
+        ))}
+      </div>
+    )}
+  </div>
+</section>
